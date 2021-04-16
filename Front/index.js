@@ -86,43 +86,6 @@ var map = new Map({
      }
   });
 
-// var text = {
-//   "type": "FeatureCollection",
-//   "features": [
-//     {
-//       "type": "Feature",
-//       "properties": {},
-//       "geometry": {
-//         "type": "Polygon",
-//         "coordinates": [
-//           [
-//             [
-//               23.484649658203125,
-//               46.770438735006586
-//             ],
-//             [
-//               23.4832763671875,
-//               46.701731254705685
-//             ],
-//             [
-//               23.697509765625,
-//               46.721976114280686
-//             ],
-//             [
-//               23.68927001953125,
-//               46.799589404058295
-//             ],
-//             [
-//               23.484649658203125,
-//               46.770438735006586
-//             ]
-//           ]
-//         ]
-//       }
-//     }
-//   ]
-// }
-
 
 var source2 = new VectorSource({
   url:"data/geojson/map.json",
@@ -182,72 +145,15 @@ $( "form" ).on( "submit", function(e) {
  
   var dataString = $(this).serialize();
    
-  // alert(dataString); return false;
-
   $.ajax({
-    // type: "POST",
-    // url: "bin/process.php",
+    
     data: dataString,
     success: function () {
-      // $("#contact_form").html("<div id='message'></div>");
-      // $("#message")
-      //   .html("<h2>Contact Form Submitted!</h2>")
-      //   .append("<p>We will be in touch soon.</p>")
-      //   .hide()
-      //   .fadeIn(1500, function () {
-      //     $("#message").append(
-      //       "<img id='checkmark' src='images/check.png' />"
-      //     );
-      //   });
+ 
     }
   });
   addInteraction();
   e.preventDefault();
 });
 
-
-
 map.removeInteraction()
-
-
-
-
-
-  // var fetchOptions = {
-  //   method: "POST",
-  //   header: new Headers({
-  //     'Content-Type': 'text/plain',
-
-  //     'Accept': 'application/json',
-  //     'Content-Type': 'application/json', 'charset': 'utf-8'
-  //   }),
-  //   //cross origin mode is needed as we are not using the same domain
-  //   mode: "cors"
-  // }
-
-  // const url = "http://localhost:8080/employees"
-  // var jsonData= text;
-  // fetchOptions.body = JSON.stringify(jsonData);
-  // //fetchOptions.method="POST"
-  // // fetchOptions.Headers={
-  // //   "Content-type": "application/json"
-  // // }
-  // fetch(url,fetchOptions)
-  // .then((response) =>{
-  //   return response.json();
-  // })
-  // .then((result)=>{
-  //   console.log(result);
-  // })
-
-
-
-//   map.on('click', function(e){
-//     //map.addLayer(vectorLayer);
-
-//     //console.log(e.coordinate);
-//     // convert coordinate to EPSG-4326
-//     var coords = olProj.transform(e.coordinate, 'EPSG:3857', 'EPSG:4326')
-//     var text= "Latitude: "+ coords[0] + " Longitude:"+coords[1]
-//     app4.todos.push({ text: text })
-//     //coordinates.push(coords);
