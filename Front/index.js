@@ -13,7 +13,8 @@ import Draw from "ol/interaction/Draw";
 import Feature from "ol/Feature";
 import Intersects from "ol/format/filter/Intersects";
 import Geometry from "ol/geom/Geometry";
-import Point from 'ol/geom/Point';
+import Point from "ol/geom/Point";
+import * as turf from "@turf/turf";
 
 // import LineString from 'ol/geom/LineString';
 // import Snap from 'ol/interaction/Snap';
@@ -23,7 +24,8 @@ import Point from 'ol/geom/Point';
 // import Source from "ol/source/Source";
 // import * as olProj from 'ol/proj';
 // import VectorImage from 'ol/layer/VectorImage';
-$('#finalSubmit').css('visibility','hidden');
+
+$("#finalSubmit").css("visibility", "hidden");
 
 const fillStyle = new Fill({
   color: [94, 95, 100, 0.3],
@@ -62,16 +64,15 @@ var divText = new Vue({
   el: "#app",
   data: {
     todos: [],
-    inputText:""
-
+    inputText: "",
+    warningText: "",
   },
 });
 
-var count =0;
+var count = 0;
 var startTime;
 var endTime;
-$("#start-time").on("change", function () {
-  
+$("#start-time").on("change", function() {
   startTime = document.getElementById("start-time");
   var endDate = new Date(startTime.value);
   endDate.setMinutes(endDate.getMinutes() + 30);
@@ -92,27 +93,24 @@ $("#start-time").on("change", function () {
   endTime = document.getElementById("end-time");
   endTime.min = startTime;
   endTime.value = localDateTime;
-  sendData(startTime,endTime);
-
-})
-
-function sendData(startTime, endTime){
-
-$("form").on("submit", function (e) {
-  count++
-  var dataString = $(this).serialize();
-  //console.log(dataString)
- 
-  $.ajax({
-    data: dataString,
-    success: function() {},
-  });
-  if(count == 1){
-    addInteraction(startTime, endTime);
-
-  }
-  e.preventDefault();
+  sendData(startTime, endTime);
 });
+
+function sendData(startTime, endTime) {
+  $("form").on("submit", function(e) {
+    count++;
+    var dataString = $(this).serialize();
+    //console.log(dataString)
+
+    $.ajax({
+      data: dataString,
+      success: function() {},
+    });
+    if (count == 1) {
+      addInteraction(startTime, endTime);
+    }
+    e.preventDefault();
+  });
 }
 map.removeInteraction();
 
@@ -127,26 +125,31 @@ function addInteraction(startTime, endTime) {
   draw.on("drawend", (evt) => {
     const coordinates = evt.feature.getGeometry().getCoordinates();
     const geometry = new Polygon(coordinates);
-    console.log(coordinates);
+    //console.log(coordinates);
     const geometry4326 = geometry.transform("EPSG:3857", "EPSG:4326");
-    divText.inputText="The polygon that you created has the following coordinates"
+    divText.inputText =
+      "The polygon that you created has the following coordinates";
     for (let i = 0; i <= geometry4326.flatCoordinates.length - 3; i += 2) {
       var arr = [];
       arr.push(geometry4326.flatCoordinates[i]);
       arr.push(geometry4326.flatCoordinates[i + 1]);
-      var text ="Latitude: " + geometry4326.flatCoordinates[i] + " Longitude:" + geometry4326.flatCoordinates[i + 1];
+      var text =
+        "Latitude: " +
+        geometry4326.flatCoordinates[i] +
+        " Longitude:" +
+        geometry4326.flatCoordinates[i + 1];
       divText.todos.push({ text: text });
-
+      // $("#finalSubmit").css("visibility", "visible");
     }
 
     var data = {
       geometry: { type: "Polygon", coordinates: geometry4326.getCoordinates() },
-      startTime:startTime.value,
-      endTime:endTime.value,
-      
+      startTime: startTime.value,
+      endTime: endTime.value,
     };
+
     fetch("http://localhost:8080/drones", {
-      method: "POST", 
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         charset: "utf-8",
@@ -155,27 +158,32 @@ function addInteraction(startTime, endTime) {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Success:", data);
+        // console.log(data);
+        console.log(geometry4326.getCoordinates());
+        if (data[0].name == "intersectie") {
+          // console.log(data.length);
+          checkIntersection(data, geometry4326.getCoordinates());
+        } else {
+          console.log("Success:");
+        }
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-     
-    });
+  });
 }
 function drawPolygonOnMap(coordinates) {
-  for(let i=0;i<coordinates[0].length-1;i++){
-    const polygonFeature2= new Feature(
+  for (let i = 0; i < coordinates[0].length - 1; i++) {
+    const polygonFeature2 = new Feature(
       new Point(coordinates[0][i]).transform("EPSG:4326", "EPSG:3857")
-      );
-      let source2 = new VectorSource({
-        features: [polygonFeature2],
-      });
-      var layer2 = new VectorLayer({
-        source: source2,
-      });
-      map.addLayer(layer2);
-
+    );
+    let source2 = new VectorSource({
+      features: [polygonFeature2],
+    });
+    var layer2 = new VectorLayer({
+      source: source2,
+    });
+    map.addLayer(layer2);
   }
   const polygonFeature = new Feature(
     new Polygon(coordinates).transform("EPSG:4326", "EPSG:3857")
@@ -193,39 +201,66 @@ function drawPolygonOnMap(coordinates) {
   });
 
   map.addLayer(layer);
-
 }
 
 $("#button").on("click", function() {
-  let request = new XMLHttpRequest();  
-  var url="http://localhost:8080/drones"+"/"+startTime.value+"_"+endTime.value;
-  console.log(url)
-   request.open("GET", url);
+  let request = new XMLHttpRequest();
+  var url =
+    "http://localhost:8080/drones" +
+    "/" +
+    startTime.value +
+    "_" +
+    endTime.value;
+  console.log(url);
+  request.open("GET", url);
   request.responseType = "text";
   request.onload = function() {
     // console.log(request.response);
     var test = JSON.parse(request.response);
     test.forEach((o) => {
       //console.log(o.geometry.coordinates[0]);
-      
+
       drawPolygonOnMap(o.geometry.coordinates);
     });
   };
   request.send();
-
 });
-// $("#finalSubmit").on("click",function(){
-//   var request= new XMLHttpRequest();
-//   request.open("GET","http://localhost:8080/drones");
-//   request.responseType = "text";
-//   request.onload = function() {
-//     // console.log(request.response);
-//     var test = JSON.parse(request.response);
-//     test.forEach((o) => {
-//       //console.log(o.geometry.coordinates[0]);
-      
-//       drawPolygonOnMap(o.geometry.coordinates);
-//     });
-//   };
-//   request.send();
-// })
+
+function checkIntersection(toDraw, drawnCoords) {
+  const userPolygon = new Feature(
+    new Polygon(drawnCoords).transform("EPSG:4326", "EPSG:3857")
+  );
+  for (let i = 0; i < toDraw.length; i++) {
+    const polygonFeature = new Feature(
+      new Polygon(toDraw[i].geometry.coordinates).transform(
+        "EPSG:4326",
+        "EPSG:3857"
+      )
+    );
+
+    var format = new GeoJSON();
+    var intersection = format.readFeature(
+      turf.intersect(
+        format.writeFeatureObject(userPolygon),
+        format.writeFeatureObject(polygonFeature)
+      )
+    );
+
+    const fillStyle2 = new Fill({
+      color: [245, 49, 5, 0.7],
+    });
+    let source = new VectorSource({
+      features: [intersection],
+    });
+    var layer = new VectorLayer({
+      source: source,
+      style: new Style({
+        fill: fillStyle2,
+        stroke: strokeStyle,
+        image: circelStyle,
+      }),
+    });
+
+    map.addLayer(layer);
+  }
+}
