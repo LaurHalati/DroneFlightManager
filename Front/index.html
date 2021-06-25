@@ -8,67 +8,45 @@
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <!-- <script src="https://unpkg.com/elm-pep"></script> -->
 
-    <title>Document</title>
-    <style>
-      #map {
-        width: 1420px;
-        height: 930px;
-      }
-      #finalSubmit{
-        visibility: visible;
-      }
-    </style>
+
+    <title>Web application for drone flight scheduling</title>
+   
     <link rel="stylesheet" href="styles.css" />
   </head>
 
   <body id="page-top" style="background: rgb(243,243,243);">
     <div class="grid-container">
-      <div class="grid-1">
-        <div id="map" class="map"></div>
+      <div class="grid-1" >
+        <div id="map" class="map"  ></div>
         <div class="sidebar"></div>
       </div>
-
       <div class="grid-2">
-      
         <div id="app">
-          <div>Please select the date and time you want to fly</div>
-          <br>
-          <form onsubmit="">
+          <div>You can choose to upload a GeoJSON and visualize it <br> Or select a day and hour to plan a flight</div>
+         <br>
+          <div>Upload GeoJSON</div>
+          <input id="geoInput" type="file" >
+              <button id="submitGEO">SubmitGEO</button>
+          <br> <br>
+              <form>
             Select the start time of the plan
             <br>
-            <input
-              type="datetime-local"
-              id="start-time"
-              
-              min="2021-03-01T00:00"
-              max="2021-03-31T23:59"
-            />
+            <input type="datetime-local"id="start-time"min="2021-03-01T00:00"max="2021-03-31T23:59"/>
             <br>
             Select the end time of the plan
             <br>
-            <input type="datetime-local" 
-             id="end-time"
-             min="2021-03-01T00:00"
-             max="2021-03-31T23:59"
-             />
+            <input type="datetime-local" id="end-time"min="2021-03-01T00:00"max="2021-03-31T23:59"/>
             <input type="submit" />
-          </form>
-          <button id="button">
-            Click to see the plans that overlap with the selected date interval 
-          </button>
-          <br>
-            {{inputText}}
-          <ol>
-            <li v-for="todo in todos">
-              {{ todo.text }}
-              <br>
-            </li>
-
-          </ol>
+          </form> 
+          <button id="button"> Click to see the plans that overlap with the selected date interval </button>
+          <br>    <br>
+          <button id="drawTrajectory">Click here to draw a plan and display it's trajectory</button>
+          <br> {{inputText}}  <br>
+            <div style="white-space: pre-line">{{coordinatesText}}</div>
           {{warningText}}
           <button id="finalSubmit" class="finalSubmit" >Are you sure you want to submit this flight plan?</button> 
-
         </div>
       </div>
     </div>
@@ -78,3 +56,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
   </body>
 </html>
+
+
+
+
+
