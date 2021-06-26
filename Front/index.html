@@ -10,43 +10,88 @@
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
     <!-- <script src="https://unpkg.com/elm-pep"></script> -->
 
-
     <title>Web application for drone flight scheduling</title>
-   
+
     <link rel="stylesheet" href="styles.css" />
   </head>
 
   <body id="page-top" style="background: rgb(243,243,243);">
     <div class="grid-container">
-      <div class="grid-1" >
-        <div id="map" class="map"  ></div>
+      <div class="grid-1">
+        <div id="map" class="map"></div>
         <div class="sidebar"></div>
       </div>
+
       <div class="grid-2">
+        <label for="cars">Choose a way to use the application:</label>
+        <select id="toPick">
+          <option value="empty">Choose one </option>
+          <option value="schedule">Schedule a plan</option>
+          <option value="visualizeTrajectory">Visualize a flying path</option>
+        </select>
+        <br /><br />
         <div id="app">
-          <div>You can choose to upload a GeoJSON and visualize it <br> Or select a day and hour to plan a flight</div>
-         <br>
+          <div>
+            You can choose to upload a GeoJSON and visualize it <br />
+            Or select a day and hour to plan a flight
+          </div><br />
           <div>Upload GeoJSON</div>
-          <input id="geoInput" type="file" >
-              <button id="submitGEO">SubmitGEO</button>
-          <br> <br>
-              <form>
-            Select the start time of the plan
-            <br>
-            <input type="datetime-local"id="start-time"min="2021-03-01T00:00"max="2021-03-31T23:59"/>
-            <br>
+          <input id="geoInput" type="file" />
+          <button id="submitGEO">SubmitGEO</button><br/><br/>
+          <form>
+            Select the start time of the plan<br />
+            <input
+              type="datetime-local"
+              id="start-time"
+              min="2021-03-01T00:00"
+              max="2021-03-31T23:59"
+            />
+            <br />
             Select the end time of the plan
-            <br>
-            <input type="datetime-local" id="end-time"min="2021-03-01T00:00"max="2021-03-31T23:59"/>
+            <br />
+            <input
+              type="datetime-local"
+              id="end-time"
+              min="2021-03-01T00:00"
+              max="2021-03-31T23:59"
+            />
             <input type="submit" />
-          </form> 
-          <button id="button"> Click to see the plans that overlap with the selected date interval </button>
-          <br>    <br>
-          <button id="drawTrajectory">Click here to draw a plan and display it's trajectory</button>
-          <br> {{inputText}}  <br>
-            <div style="white-space: pre-line">{{coordinatesText}}</div>
+          </form>
+          <button id="button">Click to see the plans that overlap with the selected date interval</button><br /> <br /> <br />
+          {{inputText}} <br />
+          <div style="white-space: pre-line">{{coordinatesText}}</div>
           {{warningText}}
-          <button id="finalSubmit" class="finalSubmit" >Are you sure you want to submit this flight plan?</button> 
+          <!-- <button id="finalSubmit" class="finalSubmit" >Are you sure you want to submit this flight plan?</button>  -->
+        </div>
+        <div id="app2">
+          <p style="white-space: pre-line">
+            This feature of the application works as follows: you will be asked
+            to provide some parameters from the camera of the drone.
+            After you enter each value, press ENTER.
+            The green point represents the starting point
+          </p>
+          <label id="spatialResolutionLabel" >SpatialResolution (cm/px) :</label>
+          <input id="spatialResolution"name="spatialResolution" /><br /><br />
+
+          <label id="digitalResolutionWidthLabel">DigitalResolutionWidth (px) :</label>
+          <input id="digitalResolutionWidth"name="digitalResolutionWidth" /><br /><br />
+
+          <label id="digitalResolutionHeightLabel">digitalResolutionHeight (px) :</label>
+          <input id="digitalResolutionHeight"name="digitalResolutionHeight" /><br /><br />
+
+          <label id="sensorWidthLabel">SensorWidth (mm) :</label>
+          <input id="sensorWidth" name="sensorWidth" /><br /><br />
+
+          <label id="focalLengthLabel">FocalLength (mm) :</label>
+          <input id="focalLength" name="focalLength" /><br /><br />
+
+         <br> <button id="drawTrajectory">
+            Click here to draw a plan and display it's trajectory
+          </button> <br>
+         <div id="beforeVizButton">  If you consider that the trajectory exits the initial path,<br>
+           please consider clicking the next button, <br>
+          for visualizing our recommanded plan for your path.</div>
+          <button id="visualizeBound"> Visualize bounding region of the path</button>
         </div>
       </div>
     </div>
@@ -56,8 +101,3 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
   </body>
 </html>
-
-
-
-
-
